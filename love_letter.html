@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #fde9f4;  /* 初始背景色 */
+      background: #fde9f4;
       min-height: 100vh;
       margin: 0;
       display: flex;
@@ -39,6 +39,14 @@
       position: absolute;
       top: 0; left: 0;
       overflow: hidden;
+      transition: background 0.6s;
+      /* ↓ 默认不透明 */
+      opacity: 1;
+    }
+    /* 打开信封时信封变透明 */
+    .open .envelope {
+      opacity: 0.38;  /* 你可以调到0.2~0.5之间，看你喜欢的透明感 */
+      background: #fff;
     }
     .flap {
       position: absolute;
@@ -93,16 +101,21 @@
       box-shadow: 0 2px 16px #fbb1c540;
       padding: 28px 20px 20px 20px;
       z-index: 4;
-      color: #a23861;
+      /* 关键：字体颜色黑色 */
+      color: #111 !important;
       font-size: 18px;
       line-height: 1.6;
       word-break: break-all;
       animation: fadein 2s;
       backdrop-filter: blur(1px);
+      /* 让打开信封时信纸也有透明感，可选 */
+      transition: background 0.5s, color 0.5s;
     }
     .open .letter-content {
       display: block;
       animation: slidein 1s;
+      background: #ffffffd2;  /* 更接近纯白，有一点透明 */
+      color: #111 !important; /* 字体依旧黑色 */
     }
     @keyframes slidein {
       from { opacity: 0; transform: translateY(30px);}
@@ -167,7 +180,7 @@
     <div class="flap"></div>
     <div class="heart"></div>
     <div class="letter-content">
-    <h2>亲爱的宝贝：</h2>
+      <h2>亲爱的宝贝：</h2>
       <p>
         谢谢你又在新一年里和我又经历了各种各样的事情哟 又是一年有你的520。<br>
         我们去了好多地方玩哦 去了延吉跟着你的攻略吃了好多好吃的哦。<br>
