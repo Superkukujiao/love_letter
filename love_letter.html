@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #fde9f4;
+      background: #fde9f4;  /* 初始背景色 */
       min-height: 100vh;
       margin: 0;
       display: flex;
@@ -14,6 +14,10 @@
       align-items: center;
       justify-content: center;
       font-family: '微软雅黑', 'Arial', sans-serif;
+      transition: background 1s;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
     }
     .envelope-container {
       position: relative;
@@ -21,6 +25,7 @@
       height: 220px;
       cursor: pointer;
       transition: transform 0.2s;
+      z-index: 10;
     }
     .envelope-container:hover {
       transform: scale(1.04);
@@ -83,7 +88,7 @@
       left: 8%;
       width: 84%;
       height: 78%;
-      background: #fff0fa;
+      background: #fff0fae0;
       border-radius: 12px;
       box-shadow: 0 2px 16px #fbb1c540;
       padding: 28px 20px 20px 20px;
@@ -93,6 +98,7 @@
       line-height: 1.6;
       word-break: break-all;
       animation: fadein 2s;
+      backdrop-filter: blur(1px);
     }
     .open .letter-content {
       display: block;
@@ -109,20 +115,49 @@
       letter-spacing: 2px;
       animation: float 2s infinite alternate;
       user-select: none;
+      z-index: 20;
+      background: rgba(255,255,255,0.7);
+      padding: 4px 10px;
+      border-radius: 10px;
+      transition: opacity 0.3s;
     }
     @keyframes float {
       from { transform: translateY(0);}
       to { transform: translateY(-10px);}
     }
     .music-info {
-      margin-top: 25px;
-      font-size: 16px;
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: rgba(255,255,255,0.84);
+      padding: 8px 16px;
+      border-radius: 18px;
+      font-size: 15px;
       color: #a94e7d;
+      box-shadow: 0 2px 10px #eec0d5b8;
+      z-index: 100;
       display: none;
-      text-align: center;
+      pointer-events: none;
+      user-select: none;
     }
-    .open ~ .music-info {
+    .music-info.show {
       display: block;
+    }
+    @media (max-width: 600px) {
+      .music-info {
+        top: 8px;
+        right: 8px;
+        font-size: 13px;
+        padding: 6px 10px;
+      }
+      .envelope-container {
+        width: 90vw;
+        height: 54vw;
+        min-width: 220px;
+        min-height: 150px;
+        max-width: 98vw;
+        max-height: 80vw;
+      }
     }
   </style>
 </head>
@@ -132,11 +167,16 @@
     <div class="flap"></div>
     <div class="heart"></div>
     <div class="letter-content">
-      <h2>亲爱的宝贝：</h2>
+    <h2>亲爱的宝贝：</h2>
       <p>
-        谢谢你又在新一年里和我又经历了各种各样的事情哟 又是一年有你的520。我们去了好多地方玩哦 去了延吉跟着你的攻略吃了好多好吃的哦 。炸酱面good！ 去了上海重回梦的开始 迪士尼！！！ 又当了一回小公主👸哦  ～虽然这次看烟花的地点没选好而且还下雨了我有点愧疚好叭 。因为我的小脾气你想买的冰淇淋也没有给你买 😭 这段时间你也开始上班了希望你不要给自己太大的压力哦！有什么心烦的事情也可以跟我倾诉。虽然我每次听了就忘记但是你可以跟我说！ 我还有很多不足的地方也谢谢你能包容我那么久！！ 祝你520快乐 我爱你❤️ 
+        谢谢你又在新一年里和我又经历了各种各样的事情哟 又是一年有你的520。<br>
+        我们去了好多地方玩哦 去了延吉跟着你的攻略吃了好多好吃的哦。<br>
+        炸酱面good！ 去了上海重回梦的开始 迪士尼！！！ 又当了一回小公主👸哦  ～ <br>
+        虽然这次看烟花的地点没选好而且还下雨了我有点愧疚好叭 。因为我的小脾气你想买的冰淇淋也没有给你买 😭  <br>
+        这段时间你也开始上班了希望你不要给自己太大的压力哦！有什么心烦的事情也可以跟我倾诉。 <br>
+        虽然我每次听了就忘记但是你可以跟我说！ 我还有很多不足的地方也谢谢你能包容我那么久！！ 祝你520快乐 我爱你❤️
       </p>
-      <p style="text-align:right;">爱你的<br>（竣）</p>
+      <p style="text-align:right;">爱你的竣<br></p>
     </div>
   </div>
   <div class="hint">点一下信封，看看里面有啥~</div>
@@ -151,19 +191,29 @@
     const envelope = document.getElementById('envelope');
     const music = document.getElementById('music');
     const musicInfo = document.getElementById('music-info');
+    const hint = document.querySelector('.hint');
+    // 换成你的照片链接
+    const photoUrl = 'https://raw.githubusercontent.com/Superkukujiao/love_letter/main/%E5%BB%B6%E5%90%89%E5%90%88%E7%85%A7.jpg';
     let isOpen = false;
 
     envelope.onclick = function() {
       if (!isOpen) {
         envelope.classList.add('open');
         music.play();
-        musicInfo.style.display = 'block';
+        musicInfo.classList.add('show');
+        if (hint) hint.style.display = 'none'; // 打开信封后隐藏提示
+        // 切换背景为照片
+        document.body.style.background = `url('${photoUrl}') no-repeat center center fixed`;
+        document.body.style.backgroundSize = 'cover';
         isOpen = true;
       } else {
         envelope.classList.remove('open');
         music.pause();
         music.currentTime = 0;
-        musicInfo.style.display = 'none';
+        musicInfo.classList.remove('show');
+        if (hint) hint.style.display = ''; // 关闭信封恢复提示
+        // 恢复初始背景
+        document.body.style.background = '#fde9f4';
         isOpen = false;
       }
     }
