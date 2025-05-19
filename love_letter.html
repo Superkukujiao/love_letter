@@ -116,6 +116,8 @@
       animation: slidein 1s;
       background: #ffffffd2;  /* 更接近纯白，有一点透明 */
       color: #111 !important; /* 字体依旧黑色 */
+      overflow-y: auto;       /* 新增：竖向自动滚动 */
+      overflow-x: hidden;     /* 新增：横向隐藏溢出 */
     }
     @keyframes slidein {
       from { opacity: 0; transform: translateY(30px);}
